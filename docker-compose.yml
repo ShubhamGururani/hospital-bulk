@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DIRECTORY_API_URL: https://hospital-directory.onrender.com
+      MAX_CONCURRENCY: "5"
+      MAX_RETRIES: "3"
+    restart: unless-stopped
