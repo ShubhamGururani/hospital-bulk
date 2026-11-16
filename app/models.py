@@ -42,6 +42,7 @@ class BulkResponse(BaseModel):
     processed_hospitals: int
     failed_hospitals: int
     processing_time_seconds: float
+    processing_time_inner: float
     batch_activated: bool
     error: str | None = None
     hospitals: list[HospitalResult]
@@ -67,6 +68,7 @@ class Batch:
     activated: bool = False
     error: str | None = None
     processing_time_seconds: float = 0.0
+    processing_time_inner: float = 0.0
 
     @classmethod
     def new(cls, rows: list[HospitalRow]) -> Batch:
@@ -91,6 +93,7 @@ class Batch:
             processed_hospitals=self.count(HospitalStatus.CREATED, HospitalStatus.CREATED_AND_ACTIVATED),
             failed_hospitals=self.count(HospitalStatus.FAILED),
             processing_time_seconds=round(self.processing_time_seconds, 3),
+            processing_time_inner = round(self.processing_time_inner, 3),
             batch_activated=self.activated,
             error=self.error,
             hospitals=[result.model_copy() for result in self.results.values()],
