@@ -81,10 +81,13 @@ class BulkProcessor:
         started = time.perf_counter()
         semaphore = asyncio.Semaphore(self._max_concurrency)
         try:
+            started_inner = time.perf_counter()
             await asyncio.gather(*(self._create(batch, row, semaphore) for row in batch.rows_to_process()))
+            inner_timer = time.perf_counter() - started_inner
             await self._activate_if_complete(batch)
         finally:
             batch.processing_time_seconds += time.perf_counter() - started
+            batch.processing_time_inner = inner_timer
 
     async def _create(self, batch: Batch, row: HospitalRow, semaphore: asyncio.Semaphore) -> None:
         result = batch.results[row.row]
